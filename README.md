@@ -14,7 +14,6 @@ There are several arguments you can pass when launching the program:
 - `-h, --host <host>`: Host to connect to. Defaults to `localhost`.
 - `-p, --port <port>`: Port to connect to. Defaults to `5000`.
 - `-c, --code <code>`: Code for joining a specific lobby.
-- `-q, --quick-join:` Start the game the moment the agent connects to the server.
 
 > **Note**
 >
@@ -30,7 +29,7 @@ There are several arguments you can pass when launching the program:
 >
 > ```json
 > "scripts": {
->    "start": "node dist/index.js -n <nickname> -h <host> -p <port> -c <code> -q"
+>    "start": "node dist/index.js -n <nickname> -h <host> -p <port> -c <code>"
 > }
 > ```
 
@@ -43,6 +42,25 @@ const agent = new Bot();
 agent.delay = 1000; // delays every message by 1000ms
 agent.delay = [500, 1000]; // delays every message by a random amount of milliseconds between 500 and 1000
 ```
+
+## Timer
+
+This framework provides a simple timer that can be used to check how much time has some operation taken. The timer has two methods:
+
+- `start()`: Starts the timer.
+- `stop()`: Stops the timer.
+- `getDuration()`: Returns the time in milliseconds.
+- `interval()`: Starts the timer, if clock not running, otherwise saves the interval.
+- `getAverageTime()`: Returns the average time in milliseconds of all intervals.
+
+## Logger
+
+This framework provides a simple logger that can be used to log messages to the console. The logger has several methods that can be used to log different types of messages:
+
+- `info(message: string)`: Logs an informational message.
+- `warning(message: string)`: Logs a warning message.
+- `error(message: string)`: Logs an error message.
+- `debug(message: string)`: Logs a debug message.
 
 ## Running the client
 

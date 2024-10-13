@@ -1,0 +1,12 @@
+{
+  "name": "agent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./bundle.cjs",
+  "module": "./bundle.mjs",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "agent": "file:"
+  }
+}
