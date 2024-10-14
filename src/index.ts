@@ -13,8 +13,7 @@ class MyAgent extends Agent {
     }
 
     on_game_start(): void {
-        // Function called when the game starts. You can use this function to initialize
-        // your agent.
+        // Function called when the game starts.
         Log.info("Game started");
     }
 
