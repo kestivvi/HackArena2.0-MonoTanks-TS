@@ -104,7 +104,7 @@ To run the client:
 npm start
 ```
 
-To run client in watch mode (client will autmoaitcally reconnect to the server, when files change):
+To run client in watch mode (client will automatically reconnect to the server, when files change):
 
 > **Note**
 >
