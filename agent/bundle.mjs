@@ -4896,8 +4896,8 @@ var TileTypes;
 })(TileTypes || (TileTypes = {}));
 var BulletType;
 (function (BulletType) {
-    BulletType["Bullet"] = "bullet";
-    BulletType["DoubleBullet"] = "doubleBullet";
+    BulletType["Bullet"] = "basic";
+    BulletType["DoubleBullet"] = "double";
 })(BulletType || (BulletType = {}));
 var ItemTypes;
 (function (ItemTypes) {

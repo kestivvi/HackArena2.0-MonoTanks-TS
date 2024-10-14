@@ -93,8 +93,8 @@ declare enum TileTypes {
     Mine = "mine"
 }
 declare enum BulletType {
-    Bullet = "bullet",
-    DoubleBullet = "doubleBullet"
+    Bullet = "basic",
+    DoubleBullet = "double"
 }
 declare enum ItemTypes {
     Unknown = 0,
