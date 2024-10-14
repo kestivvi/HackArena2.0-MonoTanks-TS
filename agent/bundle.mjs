@@ -4996,9 +4996,11 @@ class GameState {
             return this._raw.map.tiles.map((row) => {
                 const block = row[colIndex];
                 if (block.length === 0) {
-                    return { type: TileTypes.Empty };
+                    return [{ type: TileTypes.Empty }];
                 }
-                return block[0];
+                else {
+                    return block;
+                }
             });
         });
     }

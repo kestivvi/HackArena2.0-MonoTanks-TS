@@ -138,7 +138,7 @@ type LobbyDataPacket = Packet & {
         serverSettings: ServerSettings;
     };
 };
-type Bullet = TileBlock & {
+type Bullet = TileItem & {
     type: TileTypes.Bullet;
     payload: {
         id: number;
@@ -147,10 +147,10 @@ type Bullet = TileBlock & {
         type: BulletType;
     };
 };
-type Empty = TileBlock & {
+type Empty = TileItem & {
     type: TileTypes.Empty;
 };
-type Wall = TileBlock & {
+type Wall = TileItem & {
     type: TileTypes.Wall;
 };
 type Turret = {
@@ -158,7 +158,7 @@ type Turret = {
     bulletCount?: number;
     ticksToRegenBullet?: number | null;
 };
-type Tank = TileBlock & {
+type Tank = TileItem & {
     type: TileTypes.Tank;
     payload: {
         ownerId: string;
@@ -168,31 +168,31 @@ type Tank = TileBlock & {
         secondaryItem: ItemTypes;
     };
 };
-type Item = TileBlock & {
+type Item = TileItem & {
     type: TileTypes.Item;
     payload: {
         type: ItemTypes;
     };
 };
-type Laser = TileBlock & {
+type Laser = TileItem & {
     type: TileTypes.Laser;
     payload: {
         id: number;
         orientation: LaserOrientation;
     };
 };
-type Mine = TileBlock & {
+type Mine = TileItem & {
     type: TileTypes.Mine;
     payload: {
         id: number;
         explosionRemainingTicks: number | null;
     };
 };
-type TileBlock = {
+type TileItem = {
     type: TileTypes;
     payload?: object;
 };
-type MapBlock = Empty | Wall | Bullet | Tank | Item | Laser | Mine;
+type MapBlock = Array<Empty | Wall | Bullet | Tank | Item | Laser | Mine>;
 type GameStatePlayer = {
     id: string;
     nickname: string;
@@ -220,7 +220,7 @@ type ZoneStatus = {
     capturedById: string;
     retakenById: string;
 };
-type Zones = {
+type Zone = {
     x: number;
     y: number;
     width: number;
@@ -235,8 +235,8 @@ type GameStatePacket = Packet & {
         tick: number;
         players: GameStatePlayer[];
         map: {
-            tiles: TileBlock[][][] | [][][];
-            zones: Zones[];
+            tiles: TileItem[][][] | [][][];
+            zones: Zone[];
             visibility: string[];
         };
     };
@@ -312,7 +312,7 @@ type Args = {
  */
 type MapObject = {
     tiles: MapBlock[][];
-    zones: Zones[];
+    zones: Zone[];
     visibility: string[];
 };
 
@@ -608,4 +608,4 @@ declare class Timer {
     getDuration(): number;
 }
 
-export { AbilityType, type AbilityUseResponse, Agent, type Args, type Bullet, BulletType, type ConnectionRejectedPacket, type CustomError, Direction, type Empty, type GameEndPacket, GameState, type GameStatePacket, type GameStatePlayer, type Item, ItemTypes, type Laser, LaserOrientation, type LobbyDataPacket, type LobbyDataPlayer, Log, type MapBlock, type MapObject, type Mine, MoveDirection, type MovementResponse, type Packet, PacketType, type PassResponse, type PongPacket, Rotation, type RotationResponse, type ServerSettings, type Tank, TextBackground, TextColor, type TileBlock, TileTypes, Timer, type Turret, type Wall, type ZoneStatus, ZoneStatusTypes, type Zones };
+export { AbilityType, type AbilityUseResponse, Agent, type Args, type Bullet, BulletType, type ConnectionRejectedPacket, type CustomError, Direction, type Empty, type GameEndPacket, GameState, type GameStatePacket, type GameStatePlayer, type Item, ItemTypes, type Laser, LaserOrientation, type LobbyDataPacket, type LobbyDataPlayer, Log, type MapBlock, type MapObject, type Mine, MoveDirection, type MovementResponse, type Packet, PacketType, type PassResponse, type PongPacket, Rotation, type RotationResponse, type ServerSettings, type Tank, TextBackground, TextColor, type TileItem, TileTypes, Timer, type Turret, type Wall, type Zone, type ZoneStatus, ZoneStatusTypes };

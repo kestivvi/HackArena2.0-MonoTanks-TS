@@ -1,4 +1,4 @@
-import { Agent, type GameEndPacket, GameState, LobbyDataPacket, Log, MoveDirection, Rotation, TileTypes } from "../agent";
+import { Agent, type GameEndPacket, GameState, LobbyDataPacket, Log, MoveDirection, Rotation } from "../agent";
 
 /**
  * Here you can implement your agent.
