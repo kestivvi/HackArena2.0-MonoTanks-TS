@@ -18,9 +18,11 @@ declare enum PacketType {
     LobbyData = 41,
     LobbyDeleted = 34,
     GameStateGroup = 48,
-    GameStart = 49,
+    GameStarted = 49,
     GameState = 58,
     GameEnd = 59,
+    GameStarting = 52,
+    ReadyToReceiveGameState = 53,
     PlayerResponseGroup = 64,
     Movement = 73,
     Rotation = 74,
@@ -93,8 +95,8 @@ declare enum TileTypes {
     Mine = "mine"
 }
 declare enum BulletType {
-    Bullet = "basic",
-    DoubleBullet = "double"
+    Bullet = "bullet",
+    DoubleBullet = "doubleBullet"
 }
 declare enum ItemTypes {
     Unknown = 0,
@@ -138,7 +140,7 @@ type LobbyDataPacket = Packet & {
         serverSettings: ServerSettings;
     };
 };
-type Bullet = TileItem & {
+type Bullet = TileBlock & {
     type: TileTypes.Bullet;
     payload: {
         id: number;
@@ -147,10 +149,10 @@ type Bullet = TileItem & {
         type: BulletType;
     };
 };
-type Empty = TileItem & {
+type Empty = TileBlock & {
     type: TileTypes.Empty;
 };
-type Wall = TileItem & {
+type Wall = TileBlock & {
     type: TileTypes.Wall;
 };
 type Turret = {
@@ -158,7 +160,7 @@ type Turret = {
     bulletCount?: number;
     ticksToRegenBullet?: number | null;
 };
-type Tank = TileItem & {
+type Tank = TileBlock & {
     type: TileTypes.Tank;
     payload: {
         ownerId: string;
@@ -168,31 +170,31 @@ type Tank = TileItem & {
         secondaryItem: ItemTypes;
     };
 };
-type Item = TileItem & {
+type Item = TileBlock & {
     type: TileTypes.Item;
     payload: {
         type: ItemTypes;
     };
 };
-type Laser = TileItem & {
+type Laser = TileBlock & {
     type: TileTypes.Laser;
     payload: {
         id: number;
         orientation: LaserOrientation;
     };
 };
-type Mine = TileItem & {
+type Mine = TileBlock & {
     type: TileTypes.Mine;
     payload: {
         id: number;
         explosionRemainingTicks: number | null;
     };
 };
-type TileItem = {
+type TileBlock = {
     type: TileTypes;
     payload?: object;
 };
-type MapBlock = Array<Empty | Wall | Bullet | Tank | Item | Laser | Mine>;
+type MapBlock = Empty | Wall | Bullet | Tank | Item | Laser | Mine;
 type GameStatePlayer = {
     id: string;
     nickname: string;
@@ -220,7 +222,7 @@ type ZoneStatus = {
     capturedById: string;
     retakenById: string;
 };
-type Zone = {
+type Zones = {
     x: number;
     y: number;
     width: number;
@@ -235,8 +237,8 @@ type GameStatePacket = Packet & {
         tick: number;
         players: GameStatePlayer[];
         map: {
-            tiles: TileItem[][][] | [][][];
-            zones: Zone[];
+            tiles: TileBlock[][][] | [][][];
+            zones: Zones[];
             visibility: string[];
         };
     };
@@ -312,7 +314,7 @@ type Args = {
  */
 type MapObject = {
     tiles: MapBlock[][];
-    zones: Zone[];
+    zones: Zones[];
     visibility: string[];
 };
 
@@ -391,7 +393,7 @@ interface IAgent {
     /**
      * Called when the game starts.
      */
-    on_game_start(): void;
+    on_game_starting(): void;
     /**
      * Called when the game state is received.
      *
@@ -433,9 +435,10 @@ declare abstract class Agent implements IAgent {
      */
     set delay(delay: number | number[]);
     abstract on_lobby_data_received(lobbyData: LobbyDataPacket["payload"]): void;
-    abstract on_game_start(): void;
+    abstract on_game_starting(): void;
     abstract next_move(gameState: GameState): Promise<void>;
     abstract on_game_end(results: GameEndPacket["payload"]): void;
+    protected readyToReceiveGameState(): Promise<void>;
     /**
      * Sends a message to the server, resulting in moving the tank in the specified direction.
      * @param direction - The direction to move the tank.
@@ -608,4 +611,4 @@ declare class Timer {
     getDuration(): number;
 }
 
-export { AbilityType, type AbilityUseResponse, Agent, type Args, type Bullet, BulletType, type ConnectionRejectedPacket, type CustomError, Direction, type Empty, type GameEndPacket, GameState, type GameStatePacket, type GameStatePlayer, type Item, ItemTypes, type Laser, LaserOrientation, type LobbyDataPacket, type LobbyDataPlayer, Log, type MapBlock, type MapObject, type Mine, MoveDirection, type MovementResponse, type Packet, PacketType, type PassResponse, type PongPacket, Rotation, type RotationResponse, type ServerSettings, type Tank, TextBackground, TextColor, type TileItem, TileTypes, Timer, type Turret, type Wall, type Zone, type ZoneStatus, ZoneStatusTypes };
+export { AbilityType, type AbilityUseResponse, Agent, type Args, type Bullet, BulletType, type ConnectionRejectedPacket, type CustomError, Direction, type Empty, type GameEndPacket, GameState, type GameStatePacket, type GameStatePlayer, type Item, ItemTypes, type Laser, LaserOrientation, type LobbyDataPacket, type LobbyDataPlayer, Log, type MapBlock, type MapObject, type Mine, MoveDirection, type MovementResponse, type Packet, PacketType, type PassResponse, type PongPacket, Rotation, type RotationResponse, type ServerSettings, type Tank, TextBackground, TextColor, type TileBlock, TileTypes, Timer, type Turret, type Wall, type ZoneStatus, ZoneStatusTypes, type Zones };

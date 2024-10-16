@@ -4811,9 +4811,11 @@ exports.PacketType = void 0;
     PacketType[PacketType["LobbyDeleted"] = 34] = "LobbyDeleted";
     // GAME STATE GROUP
     PacketType[PacketType["GameStateGroup"] = 48] = "GameStateGroup";
-    PacketType[PacketType["GameStart"] = 49] = "GameStart";
+    PacketType[PacketType["GameStarted"] = 49] = "GameStarted";
     PacketType[PacketType["GameState"] = 58] = "GameState";
     PacketType[PacketType["GameEnd"] = 59] = "GameEnd";
+    PacketType[PacketType["GameStarting"] = 52] = "GameStarting";
+    PacketType[PacketType["ReadyToReceiveGameState"] = 53] = "ReadyToReceiveGameState";
     // PLAYER RESPONSE GROUP
     PacketType[PacketType["PlayerResponseGroup"] = 64] = "PlayerResponseGroup";
     PacketType[PacketType["Movement"] = 73] = "Movement";
@@ -4898,8 +4900,8 @@ exports.TileTypes = void 0;
 })(exports.TileTypes || (exports.TileTypes = {}));
 exports.BulletType = void 0;
 (function (BulletType) {
-    BulletType["Bullet"] = "basic";
-    BulletType["DoubleBullet"] = "double";
+    BulletType["Bullet"] = "bullet";
+    BulletType["DoubleBullet"] = "doubleBullet";
 })(exports.BulletType || (exports.BulletType = {}));
 exports.ItemTypes = void 0;
 (function (ItemTypes) {
@@ -4998,11 +5000,9 @@ class GameState {
             return this._raw.map.tiles.map((row) => {
                 const block = row[colIndex];
                 if (block.length === 0) {
-                    return [{ type: exports.TileTypes.Empty }];
+                    return { type: exports.TileTypes.Empty };
                 }
-                else {
-                    return block;
-                }
+                return block[0];
             });
         });
     }
@@ -9010,13 +9010,13 @@ class Agent {
         try {
             const args = getArgs();
             const url = getUrl(args);
-            Log.connection(`Connecting to WebSocket server: ${url}`);
+            Log.connection("Connecting to WebSocket server...");
             this._ws = new WebSocket(url);
             this._ws.on("close", () => {
                 Log.connection("WebSocket connection closed");
             });
             this._ws.on("error", (error) => {
-                Log.error("WebSocket error:", error);
+                Log.error("WebSocket error:", error.name);
                 process.exit(1);
             });
             this._ws.on("message", (data, isBinary) => this._onMessage(data, isBinary));
@@ -9066,6 +9066,12 @@ class Agent {
             }
         }
         this._delay = delay;
+    }
+    readyToReceiveGameState() {
+        const message = {
+            type: exports.PacketType.ReadyToReceiveGameState,
+        };
+        return this._sendMessage(message);
     }
     /**
      * Sends a message to the server, resulting in moving the tank in the specified direction.
@@ -9267,14 +9273,17 @@ class Agent {
                 Log.info("Lobby deleted");
                 this._gracefullyCloseWS();
                 break;
-            case exports.PacketType.GameStart:
+            case exports.PacketType.GameStarting:
+                this.on_game_starting();
+                break;
+            case exports.PacketType.GameStarted:
                 if (Array.isArray(this._delay)) {
                     Log.warning("Message delay set to random number between", this._delay[0], "and", this._delay[1], "ms");
                 }
                 if (typeof this._delay === "number" && this._delay > 0) {
                     Log.warning("Message delay set to", this._delay, "ms");
                 }
-                this.on_game_start();
+                Log.info("Game started");
                 break;
             case exports.PacketType.GameState: {
                 if (this._isProcessing) {

@@ -12,9 +12,14 @@ class MyAgent extends Agent {
         Log.info("Lobby data received");
     }
 
-    on_game_start(): void {
-        // Function called when the game starts.
-        Log.info("Game started");
+    on_game_starting(): Promise<void> {
+        // Function called when all players have joined the lobby and game is about to start.
+        // You can use this function to perform initialization of your agent.
+        // When ready, send a message to the server using this.readyToReceiveGameState().
+        // Remember to return the promise from that function function.
+        Log.debug("Game is starting");
+
+        return this.readyToReceiveGameState();
     }
 
     next_move(gameState: GameState): Promise<void> {
@@ -77,5 +82,4 @@ class MyAgent extends Agent {
 new MyAgent();
 
 // You can add delay here
-// const myAgent = new MyAgent();
-// myAgent.delay = 100;
+// agent.delay = 100;
