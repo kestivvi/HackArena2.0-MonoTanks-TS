@@ -113,3 +113,7 @@ To run client in watch mode (client will automatically reconnect to the server, 
 ```bash
 npm run start:watch
 ```
+
+docker build -t client .
+
+docker run --rm client -n <name> -h host.docker.internal / 172.17.0.1

@@ -9010,13 +9010,13 @@ class Agent {
         try {
             const args = getArgs();
             const url = getUrl(args);
-            Log.connection("Connecting to WebSocket server...");
+            Log.connection(`Connecting to WebSocket server: ${url}`);
             this._ws = new WebSocket(url);
             this._ws.on("close", () => {
                 Log.connection("WebSocket connection closed");
             });
             this._ws.on("error", (error) => {
-                Log.error("WebSocket error:", error.name);
+                Log.error("WebSocket error:", error);
                 process.exit(1);
             });
             this._ws.on("message", (data, isBinary) => this._onMessage(data, isBinary));
