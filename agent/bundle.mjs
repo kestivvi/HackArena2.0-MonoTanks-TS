@@ -4898,8 +4898,8 @@ var TileTypes;
 })(TileTypes || (TileTypes = {}));
 var BulletType;
 (function (BulletType) {
-    BulletType["Bullet"] = "bullet";
-    BulletType["DoubleBullet"] = "doubleBullet";
+    BulletType["Bullet"] = "basic";
+    BulletType["DoubleBullet"] = "double";
 })(BulletType || (BulletType = {}));
 var ItemTypes;
 (function (ItemTypes) {
@@ -4998,9 +4998,11 @@ class GameState {
             return this._raw.map.tiles.map((row) => {
                 const block = row[colIndex];
                 if (block.length === 0) {
-                    return { type: TileTypes.Empty };
+                    return [{ type: TileTypes.Empty }];
                 }
-                return block[0];
+                else {
+                    return block;
+                }
             });
         });
     }
