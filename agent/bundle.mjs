@@ -4806,7 +4806,7 @@ var PacketType;
     // LOBBY GROUP
     PacketType[PacketType["LobbyGroup"] = 32] = "LobbyGroup";
     PacketType[PacketType["LobbyData"] = 41] = "LobbyData";
-    PacketType[PacketType["LobbyDeleted"] = 34] = "LobbyDeleted";
+    PacketType[PacketType["LobbyDataRequest"] = 34] = "LobbyDataRequest";
     // GAME STATE GROUP
     PacketType[PacketType["GameStateGroup"] = 48] = "GameStateGroup";
     PacketType[PacketType["GameStarted"] = 49] = "GameStarted";
@@ -4830,6 +4830,8 @@ var PacketType;
     PacketType[PacketType["ErrorGroup"] = 240] = "ErrorGroup";
     PacketType[PacketType["InvalidPacketTypeError"] = 241] = "InvalidPacketTypeError";
     PacketType[PacketType["InvalidPacketUsageError"] = 242] = "InvalidPacketUsageError";
+    PacketType[PacketType["InvalidPayloadError"] = 243] = "InvalidPayloadError";
+    PacketType[PacketType["InvalidPayloadErrorWithPayload"] = 251] = "InvalidPayloadErrorWithPayload";
 })(PacketType || (PacketType = {}));
 var Direction;
 (function (Direction) {
@@ -5000,9 +5002,7 @@ class GameState {
                 if (block.length === 0) {
                     return [{ type: TileTypes.Empty }];
                 }
-                else {
-                    return block;
-                }
+                return block;
             });
         });
     }
@@ -8891,6 +8891,15 @@ class Log {
         console.log(Log._coloredLog(`[WARNING] ${Log._joinArgs(args)}`, TextColor.Yellow));
     }
     /**
+     * Logs a server message to the console.
+     * @TextColor White
+     * @BackgroundColor None
+     */
+    // biome-ignore lint/suspicious/noExplicitAny: Avoiding TypeScript type checking for the sake of simplicity.
+    static server(...args) {
+        console.log(Log._coloredLog(`[SERVER] ${Log._joinArgs(args)}`, TextColor.Magenta));
+    }
+    /**
      * Logs a debug message to the console.
      * @TextColor Black
      * @BackgroundColor Blue
@@ -9067,6 +9076,9 @@ class Agent {
         }
         this._delay = delay;
     }
+    /**
+     * Sends a message to the server, indicating that the agent is ready to receive the game state.
+     */
     readyToReceiveGameState() {
         const message = {
             type: PacketType.ReadyToReceiveGameState,
@@ -9081,8 +9093,8 @@ class Agent {
         const message = {
             type: PacketType.Movement,
             payload: {
-                direction,
                 gameStateId: this._gameStateId,
+                direction,
             },
         };
         return this._sendMessage(message);
@@ -9184,6 +9196,31 @@ class Agent {
         return this._sendMessage(message);
     }
     /**
+     * Sends a message to the server to request lobby data.
+     */
+    requestLobbyData() {
+        const message = {
+            type: PacketType.LobbyDataRequest,
+        };
+        return this._sendMessage(message);
+    }
+    /**
+     * Stops program for a specified amount of time.
+     *
+     * @param ms - Time to sleep in milliseconds. If an array is passed, a random number between the two values is chosen.
+     */
+    _sleep(ms) {
+        let delay = 0;
+        if (typeof ms === "number") {
+            delay = ms;
+        }
+        else {
+            const [min, max] = ms;
+            delay = Math.floor(Math.random() * (max - min + 1) + min);
+        }
+        return new Promise((resolve) => setTimeout(resolve, delay));
+    }
+    /**
      * Sends a message to the server.
      *
      * Resolves after the message is sent.
@@ -9196,20 +9233,19 @@ class Agent {
     _sendMessage(message) {
         return new Promise((resolve, _) => {
             if (this._ws.readyState === WebSocket.OPEN) {
-                this._ws.send(JSON.stringify(message), (error) => {
-                    if (error) {
-                        Log.error("Failed to send message:", error);
-                    }
-                    else {
-                        if (Array.isArray(this._delay)) {
-                            const [min, max] = this._delay;
-                            const delay = Math.floor(Math.random() * (max - min + 1) + min);
-                            setTimeout(resolve, delay);
+                this._sleep(this._delay)
+                    .then(() => {
+                    this._ws.send(JSON.stringify(message), (error) => {
+                        if (error) {
+                            Log.error("Failed to send message:", error);
                         }
                         else {
-                            setTimeout(resolve, this._delay);
+                            resolve();
                         }
-                    }
+                    });
+                })
+                    .catch((error) => {
+                    Log.error("Failed to send message:", error);
                 });
             }
             else {
@@ -9269,10 +9305,6 @@ class Agent {
                 this.on_lobby_data_received(lobbyDataPacket.payload);
                 break;
             }
-            case PacketType.LobbyDeleted:
-                Log.info("Lobby deleted");
-                this._gracefullyCloseWS();
-                break;
             case PacketType.GameStarting:
                 this.on_game_starting();
                 break;
@@ -9305,24 +9337,36 @@ class Agent {
                 break;
             case PacketType.CustomWarning: {
                 const warningMessage = packet.payload.message;
-                Log.warning("Custom warning:", warningMessage);
+                Log.server("Custom warning:", warningMessage);
                 break;
             }
             case PacketType.AlreadyMadeMovementWarning:
-                Log.warning("Already made movement warning");
+                Log.server("Already made movement warning");
                 break;
             case PacketType.ActionIgnoredDueToDeadWarning:
-                Log.warning("Action ignored due to dead warning");
+                Log.server("Action ignored due to dead warning");
                 break;
             case PacketType.SlowResponseWarningWarning:
-                Log.warning("Slow response warning");
+                Log.server("Slow response warning");
                 break;
             case PacketType.InvalidPacketTypeError:
-                Log.error("Invalid packet type error");
+                Log.server("Invalid packet type error");
                 break;
             case PacketType.InvalidPacketUsageError:
-                Log.error("Invalid packet usage error");
+                Log.server("Invalid packet usage error");
                 break;
+            case PacketType.InvalidPayloadErrorWithPayload ||
+                PacketType.InvalidPayloadError:
+                {
+                    const payload = packet.payload;
+                    if (payload.message) {
+                        Log.server("Invalid payload error:", payload.message);
+                    }
+                    else {
+                        Log.server("Invalid payload error");
+                    }
+                    break;
+                }
             default:
                 Log.error("Unknown packet type:", packet.type.toString());
         }

@@ -108,12 +108,28 @@ To run client in watch mode (client will automatically reconnect to the server, 
 
 > **Note**
 >
-> Use `npm run build:watch` in another terminal to compile the code. Nodemon is watching dist folder for changes'
+> Use `npm run build:watch` in another terminal to compile the code. Nodemon is watching dist folder for changes.
+
+> **Warning**
+>
+> Experimental feature. Game client may freeze after few reconnections.
 
 ```bash
 npm run start:watch
 ```
 
-docker build -t client .
+### 2. Running in Docker
 
+To run the client in Docker, you will need to have Docker installed on your machine. You can find installation instructions for Docker [here](https://docs.docker.com/get-docker/).
+
+To build the Docker image use:
+
+```bash
+docker build -t client .
+```
+
+To run the Docker container use:
+
+```bash
 docker run --rm client -n <name> -h host.docker.internal / 172.17.0.1
+```

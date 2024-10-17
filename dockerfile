@@ -13,7 +13,8 @@ RUN npm install
 # Step 5: Copy the rest of the application files to the container
 COPY . .
 
+# Step 6: Compile the TypeScript code to JavaScript
 RUN npx tsc
 
-# Step 6: Define the command to run the application with CLI arguments
+# Step 7: Define the command to run the application with CLI arguments
 ENTRYPOINT ["node", "./dist/index.js"]

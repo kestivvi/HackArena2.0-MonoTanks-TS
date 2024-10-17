@@ -16,7 +16,7 @@ declare enum PacketType {
     ConnectionRejected = 28,
     LobbyGroup = 32,
     LobbyData = 41,
-    LobbyDeleted = 34,
+    LobbyDataRequest = 34,
     GameStateGroup = 48,
     GameStarted = 49,
     GameState = 58,
@@ -35,7 +35,9 @@ declare enum PacketType {
     SlowResponseWarningWarning = 228,
     ErrorGroup = 240,
     InvalidPacketTypeError = 241,
-    InvalidPacketUsageError = 242
+    InvalidPacketUsageError = 242,
+    InvalidPayloadError = 243,
+    InvalidPayloadErrorWithPayload = 251
 }
 declare enum Direction {
     Up = 0,
@@ -269,6 +271,13 @@ type ConnectionRejectedPacket = Packet & {
         reason: string;
     };
 };
+type InvalidPayloadErrorPacket = Packet & {
+    type: PacketType.InvalidPayloadErrorWithPayload;
+    payload: {
+        type: PacketType.InvalidPayloadErrorWithPayload;
+        message?: string;
+    };
+};
 
 /**
  * Base interface for all game responses.
@@ -300,6 +309,9 @@ type AbilityUseResponse = GameResponse & {
 };
 type PassResponse = GameResponse & {
     type: PacketType.Pass;
+};
+type ReadyToReceiveGameStateResponse = {
+    type: PacketType.ReadyToReceiveGameState;
 };
 
 type Args = {
@@ -393,7 +405,7 @@ interface IAgent {
     /**
      * Called when the game starts.
      */
-    on_game_starting(): void;
+    on_game_starting(): Promise<void>;
     /**
      * Called when the game state is received.
      *
@@ -435,9 +447,12 @@ declare abstract class Agent implements IAgent {
      */
     set delay(delay: number | number[]);
     abstract on_lobby_data_received(lobbyData: LobbyDataPacket["payload"]): void;
-    abstract on_game_starting(): void;
+    abstract on_game_starting(): Promise<void>;
     abstract next_move(gameState: GameState): Promise<void>;
     abstract on_game_end(results: GameEndPacket["payload"]): void;
+    /**
+     * Sends a message to the server, indicating that the agent is ready to receive the game state.
+     */
     protected readyToReceiveGameState(): Promise<void>;
     /**
      * Sends a message to the server, resulting in moving the tank in the specified direction.
@@ -474,6 +489,16 @@ declare abstract class Agent implements IAgent {
      * @param turretRotation - The rotation of the turret.
      */
     protected rotate(tankRotation: Rotation | null, turretRotation: Rotation | null): Promise<void>;
+    /**
+     * Sends a message to the server to request lobby data.
+     */
+    protected requestLobbyData(): Promise<void>;
+    /**
+     * Stops program for a specified amount of time.
+     *
+     * @param ms - Time to sleep in milliseconds. If an array is passed, a random number between the two values is chosen.
+     */
+    private _sleep;
     /**
      * Sends a message to the server.
      *
@@ -534,6 +559,12 @@ declare class Log {
      * @BackgroundColor None
      */
     static warning(...args: any[]): void;
+    /**
+     * Logs a server message to the console.
+     * @TextColor White
+     * @BackgroundColor None
+     */
+    static server(...args: any[]): void;
     /**
      * Logs a debug message to the console.
      * @TextColor Black
@@ -611,4 +642,4 @@ declare class Timer {
     getDuration(): number;
 }
 
-export { AbilityType, type AbilityUseResponse, Agent, type Args, type Bullet, BulletType, type ConnectionRejectedPacket, type CustomError, Direction, type Empty, type GameEndPacket, GameState, type GameStatePacket, type GameStatePlayer, type Item, ItemTypes, type Laser, LaserOrientation, type LobbyDataPacket, type LobbyDataPlayer, Log, type MapBlock, type MapObject, type Mine, MoveDirection, type MovementResponse, type Packet, PacketType, type PassResponse, type PongPacket, Rotation, type RotationResponse, type ServerSettings, type Tank, TextBackground, TextColor, type TileItem, TileTypes, Timer, type Turret, type Wall, type Zone, type ZoneStatus, ZoneStatusTypes };
+export { AbilityType, type AbilityUseResponse, Agent, type Args, type Bullet, BulletType, type ConnectionRejectedPacket, type CustomError, Direction, type Empty, type GameEndPacket, GameState, type GameStatePacket, type GameStatePlayer, type InvalidPayloadErrorPacket, type Item, ItemTypes, type Laser, LaserOrientation, type LobbyDataPacket, type LobbyDataPlayer, Log, type MapBlock, type MapObject, type Mine, MoveDirection, type MovementResponse, type Packet, PacketType, type PassResponse, type PongPacket, type ReadyToReceiveGameStateResponse, Rotation, type RotationResponse, type ServerSettings, type Tank, TextBackground, TextColor, type TileItem, TileTypes, Timer, type Turret, type Wall, type Zone, type ZoneStatus, ZoneStatusTypes };
