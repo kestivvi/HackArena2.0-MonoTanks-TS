@@ -4809,10 +4809,7 @@ var PacketType;
     PacketType[PacketType["LobbyDataRequest"] = 34] = "LobbyDataRequest";
     // GAME STATE GROUP
     PacketType[PacketType["GameStateGroup"] = 48] = "GameStateGroup";
-    PacketType[PacketType["GameStarted"] = 49] = "GameStarted";
     PacketType[PacketType["GameState"] = 58] = "GameState";
-    PacketType[PacketType["GameEnd"] = 59] = "GameEnd";
-    PacketType[PacketType["GameStarting"] = 52] = "GameStarting";
     PacketType[PacketType["ReadyToReceiveGameState"] = 53] = "ReadyToReceiveGameState";
     // PLAYER RESPONSE GROUP
     PacketType[PacketType["PlayerResponseGroup"] = 64] = "PlayerResponseGroup";
@@ -4820,6 +4817,14 @@ var PacketType;
     PacketType[PacketType["Rotation"] = 74] = "Rotation";
     PacketType[PacketType["AbilityUse"] = 75] = "AbilityUse";
     PacketType[PacketType["Pass"] = 79] = "Pass";
+    // GAME STATUS GROUP
+    PacketType[PacketType["GameStatusGroup"] = 80] = "GameStatusGroup";
+    PacketType[PacketType["GameNotStarted"] = 81] = "GameNotStarted";
+    PacketType[PacketType["GameStarting"] = 82] = "GameStarting";
+    PacketType[PacketType["GameStarted"] = 83] = "GameStarted";
+    PacketType[PacketType["GameInProgress"] = 84] = "GameInProgress";
+    PacketType[PacketType["GameEnded"] = 93] = "GameEnded";
+    PacketType[PacketType["GameStatusRequest"] = 87] = "GameStatusRequest";
     // WARNING GROUP GROUP
     PacketType[PacketType["WarningGroup"] = 224] = "WarningGroup";
     PacketType[PacketType["CustomWarning"] = 233] = "CustomWarning";
@@ -9292,6 +9297,8 @@ class Agent {
             }
             case PacketType.ConnectionAccepted:
                 Log.connection("Connection to server opened");
+                const message = { type: PacketType.GameStatusRequest };
+                this._sendMessage(message);
                 break;
             case PacketType.ConnectionRejected: {
                 const connectionRejectedPacket = packet;
@@ -9301,10 +9308,17 @@ class Agent {
             }
             case PacketType.LobbyData: {
                 const lobbyDataPacket = packet;
+                if (lobbyDataPacket.payload.serverSettings.sandboxMode) {
+                    const message = { type: PacketType.GameStatusRequest };
+                    this._sendMessage(message);
+                    Log.info("Sandbox mode enabled");
+                }
                 this._agentId = lobbyDataPacket.payload.playerId;
                 this.on_lobby_data_received(lobbyDataPacket.payload);
                 break;
             }
+            case PacketType.GameNotStarted:
+                break;
             case PacketType.GameStarting:
                 this.on_game_starting();
                 break;
@@ -9316,6 +9330,9 @@ class Agent {
                     Log.warning("Message delay set to", this._delay, "ms");
                 }
                 Log.info("Game started");
+                break;
+            case PacketType.GameInProgress:
+                this.readyToReceiveGameState();
                 break;
             case PacketType.GameState: {
                 if (this._isProcessing) {
@@ -9331,7 +9348,7 @@ class Agent {
                 });
                 break;
             }
-            case PacketType.GameEnd:
+            case PacketType.GameEnded:
                 this.on_game_end(packet.payload);
                 this._gracefullyCloseWS();
                 break;

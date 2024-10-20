@@ -18,16 +18,20 @@ declare enum PacketType {
     LobbyData = 41,
     LobbyDataRequest = 34,
     GameStateGroup = 48,
-    GameStarted = 49,
     GameState = 58,
-    GameEnd = 59,
-    GameStarting = 52,
     ReadyToReceiveGameState = 53,
     PlayerResponseGroup = 64,
     Movement = 73,
     Rotation = 74,
     AbilityUse = 75,
     Pass = 79,
+    GameStatusGroup = 80,
+    GameNotStarted = 81,
+    GameStarting = 82,
+    GameStarted = 83,
+    GameInProgress = 84,
+    GameEnded = 93,
+    GameStatusRequest = 87,
     WarningGroup = 224,
     CustomWarning = 233,
     AlreadyMadeMovementWarning = 226,
@@ -130,9 +134,11 @@ type ServerSettings = {
     gridDimension: number;
     numberOfPlayers: number;
     seed: number;
-    ticks: number;
+    ticks: number | null;
     broadcastInterval: number;
     eagerBroadcast: boolean;
+    sandboxMode: boolean;
+    matchName: string | null;
 };
 type LobbyDataPacket = Packet & {
     type: PacketType.LobbyData;
@@ -246,7 +252,7 @@ type GameStatePacket = Packet & {
     };
 };
 type GameEndPacket = Packet & {
-    type: PacketType.GameEnd;
+    type: PacketType.GameEnded;
     payload: {
         players: [
             {
@@ -312,6 +318,9 @@ type PassResponse = GameResponse & {
 };
 type ReadyToReceiveGameStateResponse = {
     type: PacketType.ReadyToReceiveGameState;
+};
+type GameStatusRequestResponse = {
+    type: PacketType.GameStatusRequest;
 };
 
 type Args = {
@@ -642,4 +651,4 @@ declare class Timer {
     getDuration(): number;
 }
 
-export { AbilityType, type AbilityUseResponse, Agent, type Args, type Bullet, BulletType, type ConnectionRejectedPacket, type CustomError, Direction, type Empty, type GameEndPacket, GameState, type GameStatePacket, type GameStatePlayer, type InvalidPayloadErrorPacket, type Item, ItemTypes, type Laser, LaserOrientation, type LobbyDataPacket, type LobbyDataPlayer, Log, type MapBlock, type MapObject, type Mine, MoveDirection, type MovementResponse, type Packet, PacketType, type PassResponse, type PongPacket, type ReadyToReceiveGameStateResponse, Rotation, type RotationResponse, type ServerSettings, type Tank, TextBackground, TextColor, type TileItem, TileTypes, Timer, type Turret, type Wall, type Zone, type ZoneStatus, ZoneStatusTypes };
+export { AbilityType, type AbilityUseResponse, Agent, type Args, type Bullet, BulletType, type ConnectionRejectedPacket, type CustomError, Direction, type Empty, type GameEndPacket, GameState, type GameStatePacket, type GameStatePlayer, type GameStatusRequestResponse, type InvalidPayloadErrorPacket, type Item, ItemTypes, type Laser, LaserOrientation, type LobbyDataPacket, type LobbyDataPlayer, Log, type MapBlock, type MapObject, type Mine, MoveDirection, type MovementResponse, type Packet, PacketType, type PassResponse, type PongPacket, type ReadyToReceiveGameStateResponse, Rotation, type RotationResponse, type ServerSettings, type Tank, TextBackground, TextColor, type TileItem, TileTypes, Timer, type Turret, type Wall, type Zone, type ZoneStatus, ZoneStatusTypes };
