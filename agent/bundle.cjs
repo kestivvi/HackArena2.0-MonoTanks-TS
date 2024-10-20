@@ -9023,6 +9023,7 @@ class Agent {
         this._gameStateId = "";
         this._delay = 0;
         this._agentId = null;
+        this._sandboxMode = false;
         try {
             const args = getArgs();
             const url = getUrl(args);
@@ -9299,8 +9300,7 @@ class Agent {
             }
             case exports.PacketType.ConnectionAccepted:
                 Log.connection("Connection to server opened");
-                const message = { type: exports.PacketType.GameStatusRequest };
-                this._sendMessage(message);
+                this.requestLobbyData();
                 break;
             case exports.PacketType.ConnectionRejected: {
                 const connectionRejectedPacket = packet;
@@ -9310,13 +9310,14 @@ class Agent {
             }
             case exports.PacketType.LobbyData: {
                 const lobbyDataPacket = packet;
-                if (lobbyDataPacket.payload.serverSettings.sandboxMode) {
-                    const message = { type: exports.PacketType.GameStatusRequest };
-                    this._sendMessage(message);
-                    Log.info("Sandbox mode enabled");
-                }
                 this._agentId = lobbyDataPacket.payload.playerId;
                 this.on_lobby_data_received(lobbyDataPacket.payload);
+                if (lobbyDataPacket.payload.serverSettings.sandboxMode) {
+                    Log.info("Sandbox mode enabled");
+                    this._sandboxMode = true;
+                    const message = { type: exports.PacketType.GameStatusRequest };
+                    this._sendMessage(message);
+                }
                 break;
             }
             case exports.PacketType.GameNotStarted:
@@ -9334,7 +9335,9 @@ class Agent {
                 Log.info("Game started");
                 break;
             case exports.PacketType.GameInProgress:
-                this.readyToReceiveGameState();
+                if (this._sandboxMode) {
+                    this.on_game_starting();
+                }
                 break;
             case exports.PacketType.GameState: {
                 if (this._isProcessing) {

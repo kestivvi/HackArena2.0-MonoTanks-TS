@@ -9021,6 +9021,7 @@ class Agent {
         this._gameStateId = "";
         this._delay = 0;
         this._agentId = null;
+        this._sandboxMode = false;
         try {
             const args = getArgs();
             const url = getUrl(args);
@@ -9297,8 +9298,7 @@ class Agent {
             }
             case PacketType.ConnectionAccepted:
                 Log.connection("Connection to server opened");
-                const message = { type: PacketType.GameStatusRequest };
-                this._sendMessage(message);
+                this.requestLobbyData();
                 break;
             case PacketType.ConnectionRejected: {
                 const connectionRejectedPacket = packet;
@@ -9308,13 +9308,14 @@ class Agent {
             }
             case PacketType.LobbyData: {
                 const lobbyDataPacket = packet;
-                if (lobbyDataPacket.payload.serverSettings.sandboxMode) {
-                    const message = { type: PacketType.GameStatusRequest };
-                    this._sendMessage(message);
-                    Log.info("Sandbox mode enabled");
-                }
                 this._agentId = lobbyDataPacket.payload.playerId;
                 this.on_lobby_data_received(lobbyDataPacket.payload);
+                if (lobbyDataPacket.payload.serverSettings.sandboxMode) {
+                    Log.info("Sandbox mode enabled");
+                    this._sandboxMode = true;
+                    const message = { type: PacketType.GameStatusRequest };
+                    this._sendMessage(message);
+                }
                 break;
             }
             case PacketType.GameNotStarted:
@@ -9332,7 +9333,9 @@ class Agent {
                 Log.info("Game started");
                 break;
             case PacketType.GameInProgress:
-                this.readyToReceiveGameState();
+                if (this._sandboxMode) {
+                    this.on_game_starting();
+                }
                 break;
             case PacketType.GameState: {
                 if (this._isProcessing) {

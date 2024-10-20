@@ -447,6 +447,7 @@ declare abstract class Agent implements IAgent {
     private _gameStateId;
     private _delay;
     private _agentId;
+    private _sandboxMode;
     constructor();
     /**
      * Specifies the delay in milliseconds to wait before sending the next message.

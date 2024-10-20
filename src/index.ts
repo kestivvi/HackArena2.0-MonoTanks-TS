@@ -20,7 +20,6 @@ class MyAgent extends Agent {
         // Remember to return the promise from that function function.
         Log.info("Game is starting");
 
-
         return this.readyToReceiveGameState();
     }
 
