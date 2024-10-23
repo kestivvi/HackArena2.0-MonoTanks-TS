@@ -1,11 +1,11 @@
-import { Agent, type GameEndPacket, GameState, LobbyDataPacket, Log, MoveDirection, Rotation } from "../agent";
+import { Bot, type GameEndPacket, GameState, LobbyDataPacket, Log, MoveDirection, Rotation } from "../bot";
 
 /**
- * Here you can implement your agent.
+ * Here you can implement your bot.
  * 
- * As an example, we have implemented an agent that makes random moves.
+ * As an example, we have implemented an bot that makes random moves.
  */
-class MyAgent extends Agent {
+class MyBot extends Bot {
     on_lobby_data_received(lobbyData: LobbyDataPacket["payload"]): void {
         // Function called when the lobby data is received (once when joining the lobby and
         // every time the lobby data is updated).
@@ -15,24 +15,25 @@ class MyAgent extends Agent {
 
     on_game_starting(): Promise<void> {
         // Function called when all players have joined the lobby and game is about to start.
-        // You can use this function to perform initialization of your agent.
+        // You can use this function to perform initialization of your bot.
         // When ready, send a message to the server using this.readyToReceiveGameState().
-        // Remember to return the promise from that function function.
+        // Remember to return the promise from that function.
         Log.info("Game is starting");
 
         return this.readyToReceiveGameState();
     }
 
     next_move(gameState: GameState): Promise<void> {
-        // Function called each game tick to determine the next move of the agent.
+        // Function called each game tick to determine the next move of the bot.
         // gameState is an object containing the current state of the game.
         // Checkout declaration of GameState for more information on how to use it.
-
+        //
         // To move tank use: this.move and this.rotate
         // To performe action use functions starting with "use": this.useBullet, this.useDoubleBullet,
-        // this.useLaser, this.useMine, this.useRadar, this.pass.
+        // this.useLaser, this.useMine, this.useRadar, 
+        // To skip a move use: this.pass
         //
-        // Functions that perform actions return a promise that resolves when the action is performed.
+        // Functions that perform actions return a promise that resolves when the action is sent to the server.
         // Remember to return the promise from next_move function.
 
         const random = Math.random();
@@ -82,6 +83,6 @@ class MyAgent extends Agent {
     }
 }
 
-// Create an instance of your agent
-const agent = new MyAgent();
+// Create an instance of your bot
+new MyBot();
 // You can add delay here

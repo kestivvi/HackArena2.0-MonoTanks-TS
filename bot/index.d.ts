@@ -139,6 +139,7 @@ type ServerSettings = {
     eagerBroadcast: boolean;
     sandboxMode: boolean;
     matchName: string | null;
+    version: string;
 };
 type LobbyDataPacket = Packet & {
     type: PacketType.LobbyData;
@@ -405,7 +406,7 @@ declare class GameState {
 /**
  * Interface for the agent.
  */
-interface IAgent {
+interface IBot {
     /**
      * Called when the lobby data is received.
      * @param lobbyData - Lobby data received from the server.
@@ -441,7 +442,7 @@ interface IAgent {
  * Can be a single number (for setting exact delay) or an array of two numbers (for a random delay between the two numbers; first one is the minimum, second one is the maximum).
  *
  */
-declare abstract class Agent implements IAgent {
+declare abstract class Bot implements IBot {
     private _ws;
     private _isProcessing;
     private _gameStateId;
@@ -652,4 +653,4 @@ declare class Timer {
     getDuration(): number;
 }
 
-export { AbilityType, type AbilityUseResponse, Agent, type Args, type Bullet, BulletType, type ConnectionRejectedPacket, type CustomError, Direction, type Empty, type GameEndPacket, GameState, type GameStatePacket, type GameStatePlayer, type GameStatusRequestResponse, type InvalidPayloadErrorPacket, type Item, ItemTypes, type Laser, LaserOrientation, type LobbyDataPacket, type LobbyDataPlayer, Log, type MapBlock, type MapObject, type Mine, MoveDirection, type MovementResponse, type Packet, PacketType, type PassResponse, type PongPacket, type ReadyToReceiveGameStateResponse, Rotation, type RotationResponse, type ServerSettings, type Tank, TextBackground, TextColor, type TileItem, TileTypes, Timer, type Turret, type Wall, type Zone, type ZoneStatus, ZoneStatusTypes };
+export { AbilityType, type AbilityUseResponse, type Args, Bot, type Bullet, BulletType, type ConnectionRejectedPacket, type CustomError, Direction, type Empty, type GameEndPacket, GameState, type GameStatePacket, type GameStatePlayer, type GameStatusRequestResponse, type InvalidPayloadErrorPacket, type Item, ItemTypes, type Laser, LaserOrientation, type LobbyDataPacket, type LobbyDataPlayer, Log, type MapBlock, type MapObject, type Mine, MoveDirection, type MovementResponse, type Packet, PacketType, type PassResponse, type PongPacket, type ReadyToReceiveGameStateResponse, Rotation, type RotationResponse, type ServerSettings, type Tank, TextBackground, TextColor, type TileItem, TileTypes, Timer, type Turret, type Wall, type Zone, type ZoneStatus, ZoneStatusTypes };

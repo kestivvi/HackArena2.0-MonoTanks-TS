@@ -9017,7 +9017,7 @@ class Timer {
  * Can be a single number (for setting exact delay) or an array of two numbers (for a random delay between the two numbers; first one is the minimum, second one is the maximum).
  *
  */
-class Agent {
+class Bot {
     constructor() {
         this._isProcessing = false;
         this._gameStateId = "";
@@ -9395,7 +9395,7 @@ class Agent {
     }
 }
 
-exports.Agent = Agent;
+exports.Bot = Bot;
 exports.GameState = GameState;
 exports.Log = Log;
 exports.Timer = Timer;
