@@ -77,7 +77,7 @@ After installing git, Node.js and npm, you can run the following commands in the
 To clone the respotory:
 
 ```bash
-git clone https://github.com/INIT-SGGW/HackArena2024H2-TS.git
+git clone https://github.com/INIT-SGGW/HackArena2.0-MonoTanks-TS
 ```
 
 To install dependencies:
