@@ -7,8 +7,6 @@ import { Bot, Bullet, BulletDirection, BulletType, Direction, type GameEndPacket
  * As an example, we have implemented an bot that makes random moves.
  */
 class MyBot extends Bot {
-    flag: boolean = false;
-
     on_lobby_data_received(lobbyData: LobbyDataPacket["payload"]): void {
         // Function called when the lobby data is received (once when joining the lobby and
         // every time the lobby data is updated).
@@ -22,7 +20,6 @@ class MyBot extends Bot {
         // When ready, send a message to the server using this.readyToReceiveGameState().
         // Remember to return the promise from that function.
         Log.info("Game is starting");
-        this.flag = false;
 
         return this.readyToReceiveGameState();
     }
@@ -49,11 +46,12 @@ class MyBot extends Bot {
             Log.info("Self: ", gameState.self);
             Log.info("Players: ", gameState.players);
             Log.info("My tank: ", gameState.myTank);
-            for (let i = 0; i < gameState.map.tiles.length; i++) {
-                for (let j = 0; j < gameState.map.tiles[i].length; j++) {
+            gameState.map.tiles.forEach((row, i) => {
+                row.forEach((cell, j) => {
                     let tileToPrint: string = "";
-                    for (let k = 0; k < gameState.map.tiles[i][j].length; k++) {
-                        switch (gameState.map.tiles[i][j][k].type) {
+
+                    cell.forEach((tile, k) => {
+                        switch (tile.type) {
                             case TileTypes.Empty:
                                 tileToPrint = ' ';
 
@@ -61,20 +59,19 @@ class MyBot extends Bot {
                                     tileToPrint = '.';
                                 }
 
-                                if (gameState.map.zones[0].x <= i && i < gameState.map.zones[0].x + gameState.map.zones[0].width && gameState.map.zones[0].y <= j && j < gameState.map.zones[0].y + gameState.map.zones[0].height) {
-                                    tileToPrint = 'A';
-                                }
-
-                                if (gameState.map.zones[1].x <= i && i < gameState.map.zones[1].x + gameState.map.zones[1].width && gameState.map.zones[1].y <= j && j < gameState.map.zones[1].y + gameState.map.zones[1].height) {
-                                    tileToPrint = 'B';
-                                }
-
+                                gameState.map.zones.forEach((zone) => {
+                                    if (zone.x <= j && j < zone.x + zone.width && zone.y <= i && i < zone.y + zone.height) {
+                                        tileToPrint = String.fromCharCode(Number(zone.index));
+                                    }
+                                });
                                 break;
+
                             case TileTypes.Wall:
                                 tileToPrint = '#';
                                 break;
+
                             case TileTypes.Bullet:
-                                const bullet = gameState.map.tiles[i][j][k] as Bullet;
+                                const bullet = tile as Bullet;
                                 switch (bullet.payload.type) {
                                     case BulletType.Bullet:
                                         switch (bullet.payload.direction) {
@@ -109,10 +106,10 @@ class MyBot extends Bot {
                                         }
                                         break;
                                 }
-
                                 break;
+
                             case TileTypes.Tank:
-                                const tank = gameState.map.tiles[i][j][k] as Tank;
+                                const tank = tile as Tank;
                                 if (tank.payload.ownerId === gameState.self?.id) {
                                     switch (tank.payload.direction) {
                                         case Direction.Up:
@@ -122,7 +119,7 @@ class MyBot extends Bot {
                                             tileToPrint = '→';
                                             break;
                                         case Direction.Down:
-                                            tileToPrint = '→';
+                                            tileToPrint = '→'; // should this be '↓'?
                                             break;
                                         default:
                                             tileToPrint = '←';
@@ -132,12 +129,13 @@ class MyBot extends Bot {
                                     tileToPrint = 'T';
                                 }
                                 break;
+
                             case TileTypes.Item:
                                 if (tileToPrint !== "") {
                                     break;
                                 }
 
-                                const item = gameState.map.tiles[i][j][k] as Item;
+                                const item = tile as Item;
                                 switch (item.payload.type) {
                                     case ItemTypes.Laser:
                                         tileToPrint = 'L';
@@ -152,22 +150,29 @@ class MyBot extends Bot {
                                         tileToPrint = 'M';
                                 }
                                 break;
+
                             case TileTypes.Mine:
                                 tileToPrint = 'X';
                                 break;
+
                             case TileTypes.Laser:
                                 tileToPrint = '|';
                                 break;
+
                             default:
                                 tileToPrint = '?';
                         }
-                    }
+                    });
+
                     process.stdout.write(tileToPrint);
-                }
+                });
+
                 process.stdout.write("\n");
-            }
+            });
+
         }
 
+        // Random bot
         const random = Math.random();
         const randomRotation = (): Rotation | null => {
             if (Math.random() < 0.33) {

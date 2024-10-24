@@ -1,6 +1,6 @@
 # HackArena 2.0 - TypeScript API Wrapper
 
-This TypeScript Websocket client was created for Hackarena 2.0, organized by Koło Naukowe "init" from SGGW in Warsaw. It serves as an API wrapper for participants to create agents that can play the game.
+This TypeScript Websocket client was created for Hackarena 2.0, organized by Koło Naukowe "init" from SGGW in Warsaw. It serves as an API wrapper for participants to create bots that can play the game.
 
 To fully test and run the game, you will also need the game server and GUI client, as the GUI provides a visual representation of gameplay. You can find more information about the server and GUI client in the following repository:
 
@@ -14,7 +14,7 @@ You can find the rules of the game in the game instruction, that you can downloa
 
 There are several arguments you can pass when launching the program:
 
-- `-n, --nickname <nickname>`: Nickname of the agent. This argument is required and has to be unique in game environment.
+- `-n, --nickname <nickname>`: Nickname of the bot. This argument is required and has to be unique in game environment.
 - `-h, --host <host>`: Host to connect to. Defaults to `localhost`.
 - `-p, --port <port>`: Port to connect to. Defaults to `5000`.
 - `-c, --code <code>`: Code for joining a specific lobby.
@@ -29,16 +29,16 @@ There are several arguments you can pass when launching the program:
 
 ## API wrapper special features
 
-While building this API wrapper, we have added some features that helped us with testing the agent and we decided to give you access to them. Below you can find a description of these features.
+While building this API wrapper, we have added some features that helped us with testing the bot and we decided to give you access to them. Below you can find a description of these features.
 
 ### Using delay option
 
-This option will delay the sending of messages to the server by the specified amount of milliseconds. This can be useful for testing how your agent behaves if computation takes a certain amount of time. To use this option, you need to use delay setter in Agent class. The value of this key can be either a number or an array of two numbers. If it is a number, it will delay every message by that amount of milliseconds. If it is an array, it will delay every message by a random amount of milliseconds between the two numbers in the array.
+This option will delay the sending of messages to the server by the specified amount of milliseconds. This can be useful for testing how your bot behaves if computation takes a certain amount of time. To use this option, you need to use delay setter in Bot class. The value of this key can be either a number or an array of two numbers. If it is a number, it will delay every message by that amount of milliseconds. If it is an array, it will delay every message by a random amount of milliseconds between the two numbers in the array.
 
 ```typescript
-const agent = new Bot();
-agent.delay = 1000; // delays every message by 1000ms
-agent.delay = [500, 1000]; // delays every message by a random amount of milliseconds between 500 and 1000
+const myBot = new Bot();
+myBot.delay = 1000; // delays every message by 1000ms
+myBot.delay = [500, 1000]; // delays every message by a random amount of milliseconds between 500 and 1000
 ```
 
 ### Timer
@@ -138,7 +138,7 @@ docker run --rm bot -n <name> -h host.docker.internal
 
 ### What can we modify?
 
-You can modify the src/index.ts file to implement your own agent logic as well as create new files in the src/ directory to implement additional functionality.
+You can modify the src/index.ts file to implement your own bot logic as well as create new files in the src/ directory to implement additional functionality.
 
 Please, do not modify any other files, as they are used for proper network communication with the game server.
 

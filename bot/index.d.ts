@@ -352,8 +352,8 @@ type MapObject = {
 declare class GameState {
     private _raw;
     private _map;
-    private _agentId;
-    constructor(payload: GameStatePacket["payload"], agentId: string | null);
+    private _botId;
+    constructor(payload: GameStatePacket["payload"], botId: string | null);
     /**
      * The unique identifier of the game state.
      */
@@ -363,7 +363,7 @@ declare class GameState {
      */
     get tick(): number;
     /**
-     * The agent's player information.
+     * The bot's player information.
      */
     get self(): GameStatePlayer | undefined;
     /**
@@ -371,7 +371,7 @@ declare class GameState {
      */
     get players(): GameStatePlayer[];
     /**
-     * The tank of the agent.
+     * The tank of the bot.
      */
     get myTank(): Tank | undefined;
     /**
@@ -410,7 +410,7 @@ declare class GameState {
 }
 
 /**
- * Interface for the agent.
+ * Interface for the bot.
  */
 interface IBot {
     /**
@@ -453,7 +453,7 @@ declare abstract class Bot implements IBot {
     private _isProcessing;
     private _gameStateId;
     private _delay;
-    private _agentId;
+    private _botId;
     private _sandboxMode;
     constructor();
     /**
@@ -468,7 +468,7 @@ declare abstract class Bot implements IBot {
     abstract next_move(gameState: GameState): Promise<void>;
     abstract on_game_end(results: GameEndPacket["payload"]): void;
     /**
-     * Sends a message to the server, indicating that the agent is ready to receive the game state.
+     * Sends a message to the server, indicating that the bot is ready to receive the game state.
      */
     protected readyToReceiveGameState(): Promise<void>;
     /**

@@ -4933,10 +4933,10 @@ var BulletDirection;
  * Represents the game state at a given tick.
  */
 class GameState {
-    constructor(payload, agentId) {
+    constructor(payload, botId) {
         this._raw = payload;
         this._map = null;
-        this._agentId = agentId;
+        this._botId = botId;
     }
     // ---- Getters ----
     /**
@@ -4952,10 +4952,10 @@ class GameState {
         return this._raw.tick;
     }
     /**
-     * The agent's player information.
+     * The bot's player information.
      */
     get self() {
-        return this.players.find((player) => player.id === this._agentId);
+        return this.players.find((player) => player.id === this._botId);
     }
     /**
      * The players in the game.
@@ -4964,13 +4964,13 @@ class GameState {
         return this._raw.players;
     }
     /**
-     * The tank of the agent.
+     * The tank of the bot.
      */
     get myTank() {
         const myTank = this._raw.map.tiles
             .flat()
             .find((tile) => tile[0]?.type === TileTypes.Tank &&
-            tile[0]?.payload.ownerId === this._agentId);
+            tile[0]?.payload.ownerId === this._botId);
         return myTank ? myTank[0] : undefined;
     }
     /**
@@ -8797,7 +8797,7 @@ const {
  * Exits the program if the arguments are invalid.
  *
  * Arguments:
- * - `-n, --nickname <nickname>`: Nickname of the agent. This argument is
+ * - `-n, --nickname <nickname>`: Nickname of the bot. This argument is
  * required and has to be unique in game environment.
  * - `-h, --host <host>`: Host to connect to. Defaults to `localhost`.
  * - `-p, --port <port>`: Port to connect to. Defaults to `5000`.
@@ -8808,7 +8808,7 @@ const {
 function getArgs() {
     const program = new Command();
     program
-        .requiredOption("-n, --nickname <nickname>", "Nickname of the agent")
+        .requiredOption("-n, --nickname <nickname>", "Nickname of the bot")
         .option("-h, --host <host>", "Host to connect to", "localhost")
         .option("-p, --port <port>", "Port to connect to", "5000")
         .option("-c, --code <code>", "Code for joining a specific lobby");
@@ -9027,7 +9027,7 @@ class Bot {
         this._isProcessing = false;
         this._gameStateId = "";
         this._delay = 0;
-        this._agentId = null;
+        this._botId = null;
         this._sandboxMode = false;
         try {
             const args = getArgs();
@@ -9090,7 +9090,7 @@ class Bot {
         this._delay = delay;
     }
     /**
-     * Sends a message to the server, indicating that the agent is ready to receive the game state.
+     * Sends a message to the server, indicating that the bot is ready to receive the game state.
      */
     readyToReceiveGameState() {
         const message = {
@@ -9315,7 +9315,7 @@ class Bot {
             }
             case PacketType.LobbyData: {
                 const lobbyDataPacket = packet;
-                this._agentId = lobbyDataPacket.payload.playerId;
+                this._botId = lobbyDataPacket.payload.playerId;
                 this.on_lobby_data_received(lobbyDataPacket.payload);
                 if (lobbyDataPacket.payload.serverSettings.sandboxMode) {
                     Log.info("Sandbox mode enabled");
@@ -9351,7 +9351,7 @@ class Bot {
                 }
                 this._isProcessing = true;
                 const gameStatePacket = packet;
-                const gameState = new GameState(gameStatePacket.payload, this._agentId);
+                const gameState = new GameState(gameStatePacket.payload, this._botId);
                 this._gameStateId = gameState.gameStateId;
                 this.next_move(gameState).then(() => {
                     this._isProcessing = false;
