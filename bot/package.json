@@ -1,5 +1,5 @@
 {
-  "name": "bot",
+  "name": "hackarena-api-ts",
   "version": "1.0.0",
   "description": "",
   "main": "./bundle.cjs",
@@ -8,6 +8,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bot": "file:"
+    "hackarena-api-ts": "file:"
   }
 }
