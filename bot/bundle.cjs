@@ -4907,8 +4907,8 @@ exports.TileTypes = void 0;
 })(exports.TileTypes || (exports.TileTypes = {}));
 exports.BulletType = void 0;
 (function (BulletType) {
-    BulletType["Bullet"] = "basic";
-    BulletType["DoubleBullet"] = "double";
+    BulletType[BulletType["Bullet"] = 0] = "Bullet";
+    BulletType[BulletType["DoubleBullet"] = 1] = "DoubleBullet";
 })(exports.BulletType || (exports.BulletType = {}));
 exports.ItemTypes = void 0;
 (function (ItemTypes) {
@@ -4923,6 +4923,13 @@ exports.LaserOrientation = void 0;
     LaserOrientation[LaserOrientation["Horizontal"] = 0] = "Horizontal";
     LaserOrientation[LaserOrientation["Vertical"] = 1] = "Vertical";
 })(exports.LaserOrientation || (exports.LaserOrientation = {}));
+exports.BulletDirection = void 0;
+(function (BulletDirection) {
+    BulletDirection[BulletDirection["Up"] = 0] = "Up";
+    BulletDirection[BulletDirection["Right"] = 1] = "Right";
+    BulletDirection[BulletDirection["Down"] = 2] = "Down";
+    BulletDirection[BulletDirection["Left"] = 3] = "Left";
+})(exports.BulletDirection || (exports.BulletDirection = {}));
 
 /**
  * Represents the game state at a given tick.

@@ -101,8 +101,8 @@ declare enum TileTypes {
     Mine = "mine"
 }
 declare enum BulletType {
-    Bullet = "basic",
-    DoubleBullet = "double"
+    Bullet = 0,
+    DoubleBullet = 1
 }
 declare enum ItemTypes {
     Unknown = 0,
@@ -114,6 +114,12 @@ declare enum ItemTypes {
 declare enum LaserOrientation {
     Horizontal = 0,
     Vertical = 1
+}
+declare enum BulletDirection {
+    Up = 0,
+    Right = 1,
+    Down = 2,
+    Left = 3
 }
 
 /**
@@ -653,4 +659,4 @@ declare class Timer {
     getDuration(): number;
 }
 
-export { AbilityType, type AbilityUseResponse, type Args, Bot, type Bullet, BulletType, type ConnectionRejectedPacket, type CustomError, Direction, type Empty, type GameEndPacket, GameState, type GameStatePacket, type GameStatePlayer, type GameStatusRequestResponse, type InvalidPayloadErrorPacket, type Item, ItemTypes, type Laser, LaserOrientation, type LobbyDataPacket, type LobbyDataPlayer, Log, type MapBlock, type MapObject, type Mine, MoveDirection, type MovementResponse, type Packet, PacketType, type PassResponse, type PongPacket, type ReadyToReceiveGameStateResponse, Rotation, type RotationResponse, type ServerSettings, type Tank, TextBackground, TextColor, type TileItem, TileTypes, Timer, type Turret, type Wall, type Zone, type ZoneStatus, ZoneStatusTypes };
+export { AbilityType, type AbilityUseResponse, type Args, Bot, type Bullet, BulletDirection, BulletType, type ConnectionRejectedPacket, type CustomError, Direction, type Empty, type GameEndPacket, GameState, type GameStatePacket, type GameStatePlayer, type GameStatusRequestResponse, type InvalidPayloadErrorPacket, type Item, ItemTypes, type Laser, LaserOrientation, type LobbyDataPacket, type LobbyDataPlayer, Log, type MapBlock, type MapObject, type Mine, MoveDirection, type MovementResponse, type Packet, PacketType, type PassResponse, type PongPacket, type ReadyToReceiveGameStateResponse, Rotation, type RotationResponse, type ServerSettings, type Tank, TextBackground, TextColor, type TileItem, TileTypes, Timer, type Turret, type Wall, type Zone, type ZoneStatus, ZoneStatusTypes };

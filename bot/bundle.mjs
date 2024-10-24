@@ -4905,8 +4905,8 @@ var TileTypes;
 })(TileTypes || (TileTypes = {}));
 var BulletType;
 (function (BulletType) {
-    BulletType["Bullet"] = "basic";
-    BulletType["DoubleBullet"] = "double";
+    BulletType[BulletType["Bullet"] = 0] = "Bullet";
+    BulletType[BulletType["DoubleBullet"] = 1] = "DoubleBullet";
 })(BulletType || (BulletType = {}));
 var ItemTypes;
 (function (ItemTypes) {
@@ -4921,6 +4921,13 @@ var LaserOrientation;
     LaserOrientation[LaserOrientation["Horizontal"] = 0] = "Horizontal";
     LaserOrientation[LaserOrientation["Vertical"] = 1] = "Vertical";
 })(LaserOrientation || (LaserOrientation = {}));
+var BulletDirection;
+(function (BulletDirection) {
+    BulletDirection[BulletDirection["Up"] = 0] = "Up";
+    BulletDirection[BulletDirection["Right"] = 1] = "Right";
+    BulletDirection[BulletDirection["Down"] = 2] = "Down";
+    BulletDirection[BulletDirection["Left"] = 3] = "Left";
+})(BulletDirection || (BulletDirection = {}));
 
 /**
  * Represents the game state at a given tick.
@@ -9393,4 +9400,4 @@ class Bot {
     }
 }
 
-export { AbilityType, Bot, BulletType, Direction, GameState, ItemTypes, LaserOrientation, Log, MoveDirection, PacketType, Rotation, TextBackground, TextColor, TileTypes, Timer, ZoneStatusTypes };
+export { AbilityType, Bot, BulletDirection, BulletType, Direction, GameState, ItemTypes, LaserOrientation, Log, MoveDirection, PacketType, Rotation, TextBackground, TextColor, TileTypes, Timer, ZoneStatusTypes };
