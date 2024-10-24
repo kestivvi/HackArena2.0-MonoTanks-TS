@@ -4,6 +4,7 @@
   "description": "",
   "main": "./bundle.cjs",
   "module": "./bundle.mjs",
+  "types": "./index.d.ts",
   "author": "",
   "license": "ISC",
   "dependencies": {
