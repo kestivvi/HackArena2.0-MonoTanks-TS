@@ -1,5 +1,4 @@
-import { stdout } from "process";
-import { Bot, Bullet, BulletDirection, BulletType, Direction, type GameEndPacket, GameState, Item, ItemTypes, LobbyDataPacket, Log, MoveDirection, Rotation, Tank, TileTypes } from "../bot";
+import { Bot, Bullet, BulletDirection, BulletType, Direction, type GameEndPacket, GameState, Item, ItemTypes, LobbyDataPacket, Log, MoveDirection, Rotation, Tank, TileTypes } from "bot";
 
 /**
  * Here you can implement your bot.

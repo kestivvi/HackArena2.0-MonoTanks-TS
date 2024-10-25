@@ -15,6 +15,7 @@
   "dependencies": {
     "bot-ts": "file:",
     "commander": "^12.1.0",
+    "hackarena-api-ts": "file:bot",
     "ws": "^8.18.0"
   },
   "devDependencies": {
